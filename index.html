@@ -4,7 +4,52 @@
 	<meta charset="UTF-8">
 	<title>WooDTS</title>
 </head>
-<body>
+<body style="margin: 0; display: flex; flex-direction: column;">
+
+<!--Logo-->
+<div src="" alt="woodts logo" style="background: lightgrey; height: 150px; width: 150px; border-radius: 50%; align-self: center; margin-top: 20px">
+</div>
+
+<!--Gallery-->
+<div id="gallery" style="margin-top: 40px; opacity: 0;">
+	<style>.item {width: 300px; margin-bottom: 10px;}</style>
+	<script type="module">
+		import "https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"
+
+		const COLUMN_WIDTH = 300;
+		const GAP = 10;
+
+		let gallery = document.getElementById("gallery");
+
+		// --- center ---
+		window.onresize = () => {
+			let width = window.innerWidth;
+			let columns = 0;
+			let left, willLeft;
+			do {
+				left = willLeft;
+				willLeft = width - ((columns * COLUMN_WIDTH) + ((columns - 1) * GAP));
+				columns++;
+			} while (willLeft > 0);
+			console.log("left: ", left);
+
+			gallery.style.marginLeft = `${left / 2}px`;
+		};
+		window.onresize(); // init
+
+		new Masonry(gallery, {itemSelector: '.item', gutter: 10}); // layout
+		gallery.style.opacity = 1; // display
+	</script>
+
+	<div class="item" style="background: deepskyblue; height: 500px;"></div>
+	<div class="item" style="background: yellow; height: 250px;"></div>
+	<div class="item" style="background: blueviolet; height: 200px;"></div>
+	<div class="item" style="background: darkred; height: 200px;"></div>
+	<div class="item" style="background: deepskyblue; height: 500px;"></div>
+	<div class="item" style="background: yellow; height: 250px;"></div>
+	<div class="item" style="background: blueviolet; height: 200px;"></div>
+	<div class="item" style="background: darkred; height: 200px;"></div>
+</div>
 
 </body>
 </html>

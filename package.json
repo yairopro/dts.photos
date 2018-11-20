@@ -1,0 +1,19 @@
+{
+  "name": "woodts.me",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "generateProducts": "node scripts/generateProducts.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yairopro/woodts.me.git"
+  },
+  "author": "yair",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yairopro/woodts.me/issues"
+  },
+  "homepage": "woodts.me"
+}
