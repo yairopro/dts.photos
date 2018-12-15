@@ -7,19 +7,35 @@
 <body style="margin: 0; display: flex; flex-direction: column;">
 
 <!--Logo-->
-<div src="" alt="woodts logo" style="background: lightgrey; height: 150px; width: 150px; border-radius: 50%; align-self: center; margin-top: 20px">
+<div src="" alt="woodts logo"
+	 style="background: lightgrey; height: 150px; width: 150px; border-radius: 50%; align-self: center; margin-top: 20px">
 </div>
 
 <!--Gallery-->
-<div id="gallery" style="margin-top: 40px; opacity: 0;">
-	<style>.item {width: 300px; margin-bottom: 10px;}</style>
+<div id="gallery" style="margin-top: 40px;">
+	<style>
+		.item {
+			width: 300px;
+			margin-bottom: 10px;
+			box-sizing: border-box;
+			border-radius: 5px;
+			cursor: pointer;
+			overflow: hidden;
+		}
+
+		.item:hover {
+			box-shadow: 0 0 10px black;
+		}
+	</style>
 	<script type="module">
 		import "https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"
+		import products from "./src/products.js"
 
 		const COLUMN_WIDTH = 300;
 		const GAP = 10;
 
 		let gallery = document.getElementById("gallery");
+		console.log(gallery);
 
 		// --- center ---
 		window.onresize = () => {
@@ -31,24 +47,40 @@
 				willLeft = width - ((columns * COLUMN_WIDTH) + ((columns - 1) * GAP));
 				columns++;
 			} while (willLeft > 0);
-			console.log("left: ", left);
-
 			gallery.style.marginLeft = `${left / 2}px`;
 		};
 		window.onresize(); // init
 
-		new Masonry(gallery, {itemSelector: '.item', gutter: 10}); // layout
-		gallery.style.opacity = 1; // display
-	</script>
+		let masonry = window.masonry = new Masonry( gallery, {
+			columnWidth: COLUMN_WIDTH,
+			itemSelector: '.item',
+			gutter : GAP,
+		});
 
-	<div class="item" style="background: deepskyblue; height: 500px;"></div>
-	<div class="item" style="background: yellow; height: 250px;"></div>
-	<div class="item" style="background: blueviolet; height: 200px;"></div>
-	<div class="item" style="background: darkred; height: 200px;"></div>
-	<div class="item" style="background: deepskyblue; height: 500px;"></div>
-	<div class="item" style="background: yellow; height: 250px;"></div>
-	<div class="item" style="background: blueviolet; height: 200px;"></div>
-	<div class="item" style="background: darkred; height: 200px;"></div>
+
+		async function setImage(element, image){
+			let img = new Image;
+			img.src = image;
+			await new Promise(resolve => img.onload = resolve);
+			element.style.backgroundImage = `url("${image}")`;
+		}
+
+		products.forEach((productGallery, index) => {
+			let item = document.createElement("div");
+			item.classList.add("item");
+			item.style.height = `${Math.trunc((productGallery[0].height / productGallery[0].width) * COLUMN_WIDTH)}px`;
+			item.style.backgroundColor = productGallery[0].colors[0];
+
+			let productView = document.createElement("div");
+			productView.style.height = item.style.height;
+			productView.style.backgroundSize = `cover`;
+			item.appendChild(productView);
+			setImage(productView, `./res/image/product/${index}/0.${productGallery[0].type}`);
+
+			gallery.appendChild(item);
+			masonry.appended(item);
+		});
+	</script>
 </div>
 
 </body>

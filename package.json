@@ -17,9 +17,9 @@
   },
   "homepage": "woodts.me",
   "devDependencies": {
-    "mime-types": "^2.1.21"
+    "image-size": "^0.6.3",
+    "mime-types": "^2.1.21",
+    "node-vibrant": "^3.0.0"
   },
-  "dependencies": {
-    "image-size": "^0.6.3"
-  }
+  "dependencies": {}
 }
