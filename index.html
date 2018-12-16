@@ -4,7 +4,17 @@
 	<meta charset="UTF-8">
 	<title>WooDTS</title>
 </head>
-<body style="margin: 0; display: flex; flex-direction: column;">
+<body style="margin: 0; display: flex; flex-direction: column; font-family: 'Roboto'">
+
+<script type="module">
+	import products from "./src/products.js"
+	window.products = products;
+	products.forEach((gallery, id) => {
+		gallery.forEach((image, index) => {
+			image.src = `./res/image/product/${id}/${index}.${image.type}`;
+		})
+	})
+</script>
 
 <!--Logo-->
 <div src="" alt="woodts logo"
@@ -27,9 +37,9 @@
 			box-shadow: 0 0 10px black;
 		}
 	</style>
+
 	<script type="module">
 		import "https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"
-		import products from "./src/products.js"
 
 		const COLUMN_WIDTH = 300;
 		const GAP = 10;
@@ -75,12 +85,55 @@
 			productView.style.height = item.style.height;
 			productView.style.backgroundSize = `cover`;
 			item.appendChild(productView);
-			setImage(productView, `./res/image/product/${index}/0.${productGallery[0].type}`);
+			setImage(productView, productGallery[0].src);
 
 			gallery.appendChild(item);
 			masonry.appended(item);
+
+			item.onclick = () => openProduct(index);
 		});
 	</script>
+</div>
+
+
+<!--Product page-->
+<div id="productPage" style="background: rgba(0,0,0,0.65)">
+	<style>
+		#productPage {
+			position: fixed;
+			top: 0; bottom: 0; right: 0;  left: 0;
+			z-index: 1;
+			display: none;
+		}
+
+		#productPage.open {
+			display: block;
+		}
+	</style>
+	<script>
+		const productPage = document.getElementById("productPage");
+		function openProduct(id){
+			productPage.classList.add("open");
+			const imageLayout = document.getElementById("productPageImage");
+			imageLayout.style.backgroundImage = `url("${products[id][0].src}")`;
+		}
+
+		function closeProduct(){
+			productPage.classList.remove("open");
+		}
+	</script>
+
+	<!--app bar-->
+	<div style="background: rgba(0,0,0,0.35); position: absolute; left: 0; top: 0; right: 0; z-index: 1;">
+		<div
+				onclick="closeProduct()"
+				style="display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; height: 64px; width: 64px; font-size: 17px;">
+			< Back
+		</div>
+	</div>
+
+	<!--image-->
+	<div id="productPageImage" style="position: absolute; top: 0; bottom: 0; right: 0;  left: 0; background-size: contain; background-position:center; background-repeat: no-repeat;"></div>
 </div>
 
 </body>
