@@ -3,8 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<title>WooDTS</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
-<body style="margin: 0; display: flex; flex-direction: column; font-family: 'Roboto'">
+<body style="margin: 0; display: flex; flex-direction: column;">
 
 <script type="module">
 	import products from "./src/products.js"
@@ -17,9 +19,8 @@
 </script>
 
 <!--Logo-->
-<div src="" alt="woodts logo"
-	 style="background: lightgrey; height: 150px; width: 150px; border-radius: 50%; align-self: center; margin-top: 20px">
-</div>
+<img src="./res/image/logo.png" alt="woodts logo"
+	 style="height: 150px; width: 150px; align-self: center; margin-top: 20px;">
 
 <!--Gallery-->
 <div id="gallery" style="margin-top: 40px;">
@@ -97,7 +98,7 @@
 
 
 <!--Product page-->
-<div id="productPage" style="background: rgba(0,0,0,0.65)">
+<div id="productPage" style="background: rgba(0,0,0,0.83)">
 	<style>
 		#productPage {
 			position: fixed;
@@ -124,16 +125,27 @@
 	</script>
 
 	<!--app bar-->
-	<div style="background: rgba(0,0,0,0.35); position: absolute; left: 0; top: 0; right: 0; z-index: 1;">
+	<div id="productPageAppBar" style="background: rgba(0,0,0,0.35); position: absolute; left: 0; top: 0; right: 0; z-index: 1;">
 		<div
 				onclick="closeProduct()"
-				style="display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; height: 64px; width: 64px; font-size: 17px;">
-			< Back
+				style="display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; height: 64px; width: 64px; font-size: 17px; user-select: none;">
+			<i class="material-icons">arrow_back</i>
 		</div>
+
+		<script>
+			let productPageAppBar = document.getElementById("productPageAppBar");
+			function toggleProductPageAppBar(){
+				productPageAppBar.style.display = productPageAppBar.style.display === "none" ? "block" : "none";
+			}
+		</script>
 	</div>
 
 	<!--image-->
-	<div id="productPageImage" style="position: absolute; top: 0; bottom: 0; right: 0;  left: 0; background-size: contain; background-position:center; background-repeat: no-repeat;"></div>
+	<div id="productPageImage"
+		 onclick="toggleProductPageAppBar()"
+		 style="position: absolute; top: 0; bottom: 0; right: 0;  left: 0; background-size: contain; background-position:center; background-repeat: no-repeat;">
+
+	</div>
 </div>
 
 </body>
