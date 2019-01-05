@@ -18,6 +18,7 @@
   "homepage": "woodts.me",
   "devDependencies": {
     "image-size": "^0.6.3",
+    "image-thumbnail": "^1.0.1",
     "mime-types": "^2.1.21",
     "node-vibrant": "^3.0.0"
   },

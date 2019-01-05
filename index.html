@@ -11,11 +11,12 @@
 <script type="module">
 	import products from "./src/products.js"
 	window.products = products;
-	products.forEach((gallery, id) => {
-		gallery.forEach((image, index) => {
-			image.src = `./res/image/product/${id}/${index}.${image.type}`;
-		})
-	})
+	products.forEach((product) => {
+		product.thumbnail.src = `./res/image/product/thumbnails/${product.thumbnail.file}`;
+		product.gallery.forEach((image) => {
+			image.src = `./res/image/product/galleries/${product.id}/${image.file}`;
+		});
+	});
 </script>
 
 <!--Logo-->
@@ -76,22 +77,23 @@
 			element.style.backgroundImage = `url("${image}")`;
 		}
 
-		products.forEach((productGallery, index) => {
+		products.forEach(product => {
 			let item = document.createElement("div");
 			item.classList.add("item");
-			item.style.height = `${Math.trunc((productGallery[0].height / productGallery[0].width) * COLUMN_WIDTH)}px`;
-			item.style.backgroundColor = productGallery[0].colors[0];
+			let image = product.thumbnail;
+			item.style.height = `${Math.trunc((image.height / image.width) * COLUMN_WIDTH)}px`;
+			item.style.backgroundColor = image.colors[0];
 
 			let productView = document.createElement("div");
 			productView.style.height = item.style.height;
 			productView.style.backgroundSize = `cover`;
 			item.appendChild(productView);
-			setImage(productView, productGallery[0].src);
+			setImage(productView, image.src);
 
 			gallery.appendChild(item);
 			masonry.appended(item);
 
-			item.onclick = () => openProduct(index);
+			item.onclick = () => openProduct(product);
 		});
 	</script>
 </div>
@@ -113,10 +115,10 @@
 	</style>
 	<script>
 		const productPage = document.getElementById("productPage");
-		function openProduct(id){
+		function openProduct(product){
 			productPage.classList.add("open");
 			const imageLayout = document.getElementById("productPageImage");
-			imageLayout.style.backgroundImage = `url("${products[id][0].src}")`;
+			imageLayout.style.backgroundImage = `url("${product.gallery[0].src}")`;
 		}
 
 		function closeProduct(){

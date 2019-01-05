@@ -1,55 +1,103 @@
+require("../src/js.js");
+const Path = require("./Path");
 const FileSystem = require('fs');
 const Mime = require("mime-types");
 const getDimensions = require('image-size');
 const Vibrant = require("node-vibrant");
+const nodeThumbnail = require('image-thumbnail');
 
-let PRODUCTS_PATH = "./res/image/product/";
 
-let done = 0;
-let numberOfFiles = FileSystem.readdirSync(PRODUCTS_PATH)
-	.map(Number)
-	.filter(id => !isNaN(id))
-	.map(id => FileSystem.readdirSync(PRODUCTS_PATH + id))
-	.reduce((result, item) => result.concat(item), [])
-	.length;
+let PRODUCTS_FOLDER = Path.project.resolve("./res/image/product/");
+let picturesFolder = PRODUCTS_FOLDER.childrenMap.galleries;
 
-// for each dir create a gallery array
-Promise.all(
-	FileSystem.readdirSync(PRODUCTS_PATH)
-	// convert
-		.map(Number)
-		// filter
-		.filter(id => !isNaN(id))
-		// sort
-		.sort((a, b) => a - b)
-		// build gallery
-		.map(id =>
-			Promise.all(
-			FileSystem.readdirSync(PRODUCTS_PATH + id)
-				.map(fileName => ({
-					fileName,
-					index : Number(fileName.slice(0, fileName.lastIndexOf("."))),
-					contentType : Mime.lookup(PRODUCTS_PATH + id + "/" + fileName),
-				}))
-				.filter(({index, contentType}) => !isNaN(index) && contentType && contentType.startsWith("image"))
-				.sort((a, b) => a.index - b.index)
-				.map(async ({fileName, type}) => ({
-					type,
-					...getDimensions(PRODUCTS_PATH + id + "/" + fileName),
-					colors : await Vibrant.from(PRODUCTS_PATH + id + "/" + fileName)
-						.getPalette()
-						.then(palette => {
-						console.log(`${Math.trunc(++done * 100 / numberOfFiles)}%`);
+let thumbnailsFolder = PRODUCTS_FOLDER.childrenMap.thumbnails;
+if (thumbnailsFolder)
+	thumbnailsFolder.clear();
+else
+	thumbnailsFolder = PRODUCTS_FOLDER.newDirectory("thumbnails");
 
-						return [
-							(palette.LightVibrant || palette.LightMuted || palette.Vibrant || palette.Muted).getHex(),
-							(palette.DarkVibrant || palette.DarkMuted || palette.Vibrant || palette.Muted).getHex(),
-						];
-					})
-				}))
-			)
-		)
-).then(products => {
-	FileSystem.writeFileSync("src/products.js", 'export default ' + JSON.stringify(products));
-}).catch(console.error);
-// place the array in the products.js file
+
+
+let products = picturesFolder.children.filter(item => item.isDirectory && item.children.length && !item.hidden)
+	.map(folder => ({
+		id : folder.name,
+		gallery : folder.children
+			.filter(item =>
+				item.isFile
+				&& !item.hidden
+				&& Mime.lookup(item.toString())
+					.startsWith("image")
+			).map(path => ({path, file : path.fullName})),
+	}));
+
+// ----
+(async () => {
+	await products.forEachAsync(async product => {
+
+		// get data
+		await product.gallery.forEachAsync(async image => {
+			let {path} = image;
+
+			// dimensions
+			Object.assign(image, getDimensions(path.toString()));
+
+			// colors
+			let palette = await Vibrant.from(path.toString()).getPalette();
+			image.colors = [
+				(palette.LightVibrant || palette.LightMuted || palette.Vibrant || palette.Muted).getHex(),
+				(palette.DarkVibrant || palette.DarkMuted || palette.Vibrant || palette.Muted).getHex(),
+			];
+
+			onFileDone();
+		});
+
+
+		// thumbnail first image in gallery
+		await buildThumbnail(product)
+	});
+
+	// finished
+	products.forEach(({thumbnail, gallery}) => {
+		gallery.forEach(image => {delete image.path});
+	});
+
+	FileSystem.writeFileSync("src/products.js", `export default ${JSON.stringify(products)}`);
+})();
+
+
+let totalNumberOfImages =  products.flatMap(({gallery}) => gallery).length;
+let done = 0; // to display percentage
+function onFileDone(){
+	done++;
+	console.clear();
+	console.log(Math.trunc(done * 100 / totalNumberOfImages) + '%');
+}
+
+
+const thumbnailMaxSize = 300;
+async function buildThumbnail(product){
+	let [firstImage] = product.gallery;
+
+	let thumbnail = product.thumbnail = Object.assign(
+		{},
+		firstImage,
+		{file: `${product.id}.${firstImage.path.extension}`}
+	);
+	delete thumbnail.path;
+
+	let [lower, higher] = ["width", "height"]
+		.sort((dim1, dim2) => firstImage[dim1] - firstImage[dim2]);
+
+	if (firstImage[higher] < thumbnailMaxSize)
+		// just copy the image
+		firstImage.path.copyTo(thumbnailsFolder + thumbnail.file);
+
+	else {
+		let dimensions = {[higher]: thumbnailMaxSize};
+		dimensions[lower] = Math.round(firstImage[lower] * thumbnailMaxSize / firstImage[higher]);
+
+		let data = await nodeThumbnail(firstImage.path.toString(), dimensions);
+		thumbnailsFolder.newFile(product.thumbnail.file, data);
+		Object.assign(thumbnail, dimensions);
+	}
+}
