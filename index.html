@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>WooDTS</title>
+	<title>DTS</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
@@ -74,14 +74,14 @@
 		};
 		window.onresize(); // init
 
-		let masonry = window.masonry = new Masonry( gallery, {
+		let masonry = window.masonry = new Masonry(gallery, {
 			columnWidth: COLUMN_WIDTH,
 			itemSelector: '.item',
-			gutter : GAP,
+			gutter: GAP,
 		});
 
 
-		async function setImage(element, image){
+		async function setImage(element, image) {
 			let img = new Image;
 			img.src = image;
 			await new Promise(resolve => img.onload = resolve);
@@ -119,7 +119,7 @@
 	<script src="./src/photoSwipe/photoswipe-ui.js"></script>
 
 	<script>
-		function openProduct(product){
+		function openProduct(product) {
 			let pswpElement = document.querySelector('.pswp');
 			let gallery = new PhotoSwipe(
 				pswpElement,
@@ -211,7 +211,8 @@
 
 
 <!--contact-->
-<div id="contact" style="position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #DEDEDE; display: flex; justify-content: space-between; padding: 10px; text-decoration: none;">
+<div id="contact"
+	 style="position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #DEDEDE; display: flex; justify-content: space-between; padding: 10px; text-decoration: none;">
 	<style>
 		/* On screens that are 992px or less, set the background color to blue */
 		@media screen and (max-width: 400px) {
@@ -219,6 +220,7 @@
 				font-size: 12px;
 			}
 		}
+
 		/* On screens that are 992px or less, set the background color to blue */
 		@media screen and (min-width: 1000px) {
 			#contact {
